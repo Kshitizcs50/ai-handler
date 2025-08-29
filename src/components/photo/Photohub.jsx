@@ -1,143 +1,98 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import RenderModel from "@/components/RenderModel";
+import { Model } from "../models/doom";
+import { Typewriter } from "react-simple-typewriter";
 
-const HEROES = ["Iron Man", "Thor", "Hulk", "Captain America"];
+function Photohub() {
+  const [showDetails, setShowDetails] = useState(false);
 
-export default function Photohub() {
-  const [file, setFile] = useState(null);
-  const [hero, setHero] = useState(HEROES[0]);
-  const [loading, setLoading] = useState(false);
-  const [resultUrl, setResultUrl] = useState(null);
-  const [error, setError] = useState("");
-  const [keyStatus, setKeyStatus] = useState(null); // ✅ API key check
+  // Left Systems
+  const detailsLeft = [
+    { name: "Armor System", description: "High-tech armor with enhanced durability." },
+    { name: "Energy Core", description: "Power source for all combat functions." },
+  ];
 
-  // ✅ Check Hugging Face key when page loads
-  useEffect(() => {
-    async function checkKey() {
-      try {
-        const res = await fetch("http://localhost:8080/ai/check-key");
-        const data = await res.json();
-        if (!res.ok) throw new Error("Failed to check key");
-        setKeyStatus(data.valid ? "valid" : "invalid");
-      } catch (err) {
-        setKeyStatus("error");
-      }
-    }
-    checkKey();
-  }, []);
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setResultUrl(null);
-
-    if (!file) {
-      setError("Please choose a photo first.");
-      return;
-    }
-
-    if (keyStatus !== "valid") {
-      setError("Cannot generate — API key is missing or invalid.");
-      return;
-    }
-
-    const form = new FormData();
-    form.append("photo", file);
-    form.append("hero", hero);
-
-    try {
-      setLoading(true);
-      const res = await fetch("http://localhost:8080/ai/heroize", {
-        method: "POST",
-        body: form,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        throw new Error(data.message || `HTTP ${res.status}`);
-      }
-
-      if (data.url) {
-        setResultUrl(
-          data.url.startsWith("http")
-            ? data.url
-            : `http://localhost:8080${data.url}`
-        );
-      } else {
-        throw new Error("No image URL returned from server.");
-      }
-    } catch (err) {
-      setError(String(err.message || err));
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Right Systems
+  const detailsRight = [
+    { name: "Weapon Module", description: "Equipped with plasma blasters and rockets." },
+    { name: "Targeting System", description: "Advanced AI-assisted targeting sensors." },
+  ];
 
   return (
-    <div style={{ maxWidth: 680, margin: "40px auto", color: "#fff" }}>
-      <h2>Become a Hero 🦸</h2>
+    <div className="relative w-[1200px] h-[900px] flex flex-col items-center justify-center">
+      {/* 3D Model */}
+      <RenderModel>
+        <Model />
+      </RenderModel>
 
-      {/* ✅ Key status banner */}
-      {keyStatus === "valid" && (
-        <p style={{ color: "lightgreen" }}>✅ API key is valid, ready to generate.</p>
-      )}
-      {keyStatus === "invalid" && (
-        <p style={{ color: "salmon" }}>⚠️ API key is missing or invalid. Image generation won’t work.</p>
-      )}
-      {keyStatus === "error" && (
-        <p style={{ color: "orange" }}>⚠️ Could not check API key (server error).</p>
-      )}
+     {/* Toggle button (moved to top-right) */}
+<div className="absolute right-16 top-10 z-10">
+  {!showDetails ? (
+    <button
+      className="px-8 py-3 bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold rounded-full shadow-2xl hover:scale-110 hover:shadow-red-500/50 transition-all duration-300"
+      onClick={() => setShowDetails(true)}
+    >
+      Show Systems
+    </button>
+  ) : (
+    <button
+      className="px-8 py-3 bg-gradient-to-r from-gray-700 to-black text-white font-bold rounded-full shadow-2xl hover:scale-110 hover:shadow-gray-700/50 transition-all duration-300"
+      onClick={() => setShowDetails(false)}
+    >
+      Revoke
+    </button>
+  )}
+</div>
 
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
-        <label>
-          Choose a hero:
-          <select value={hero} onChange={(e) => setHero(e.target.value)}>
-            {HEROES.map((h) => (
-              <option key={h} value={h}>
-                {h}
-              </option>
+      {/* Left and Right Panels */}
+      {showDetails && (
+        <>
+          {/* Left Panel */}
+          <div className="absolute left-10 top-[40%] -translate-y-1/2 bg-gradient-to-b from-red-900/40 to-black/60 backdrop-blur-xl p-6 rounded-2xl shadow-2xl w-80 border border-red-500/30 z-10">
+            <h2 className="font-bold text-xl mb-4 text-red-400">Armor Systems</h2>
+            {detailsLeft.map((d, idx) => (
+              <div key={idx} className="mb-6">
+                <h3 className="font-semibold text-lg text-orange-300">{d.name}</h3>
+                <p className="text-gray-200 text-sm">
+                  <Typewriter
+                    words={[d.description]}
+                    loop={1}
+                    cursor
+                    cursorStyle="_"
+                    typeSpeed={40}
+                    deleteSpeed={30}
+                    delaySpeed={1000}
+                  />
+                </p>
+              </div>
             ))}
-          </select>
-        </label>
+          </div>
 
-        <label>
-          Upload your photo:
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-          />
-        </label>
-
-        <button
-          type="submit"
-          disabled={!file || loading}
-          style={{
-            padding: "10px 16px",
-            borderRadius: 8,
-            border: "none",
-            background: loading ? "#555" : "#007bff",
-            color: "#fff",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Generating..." : "Generate"}
-        </button>
-      </form>
-
-      {error && <p style={{ color: "salmon", marginTop: 12 }}>{error}</p>}
-
-      {resultUrl && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Your result</h3>
-          <img
-            src={resultUrl}
-            alt="Result"
-            style={{ width: "100%", maxWidth: 512, borderRadius: 12 }}
-          />
-        </div>
+          {/* Right Panel */}
+          <div className="absolute right-10 top-[40%] -translate-y-1/2 bg-gradient-to-b from-red-900/40 to-black/60 backdrop-blur-xl p-6 rounded-2xl shadow-2xl w-80 border border-red-500/30 z-10">
+            <h2 className="font-bold text-xl mb-4 text-red-400">Weapon Systems</h2>
+            {detailsRight.map((d, idx) => (
+              <div key={idx} className="mb-6">
+                <h3 className="font-semibold text-lg text-orange-300">{d.name}</h3>
+                <p className="text-gray-200 text-sm">
+                  <Typewriter
+                    words={[d.description]}
+                    loop={1}
+                    cursor
+                    cursorStyle="_"
+                    typeSpeed={40}
+                    deleteSpeed={30}
+                    delaySpeed={1000}
+                  />
+                </p>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
 }
+
+export default Photohub;

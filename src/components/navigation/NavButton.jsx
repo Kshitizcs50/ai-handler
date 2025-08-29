@@ -3,12 +3,12 @@ import {
   Home,
 
   NotebookText,
-  Palette,
+  MessageCircleMore,
   Phone,
-  Plane,
+  Swords,
   Brain,
+  Film ,
   User,
-  Puzzle,
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -21,17 +21,17 @@ const getIcon = (icon) => {
     case "home":
       return <Home className="w-full h-auto" strokeWidth={1.5} />;
     case "about":
-      return <User className="w-full h-auto" strokeWidth={1.5} />;
+      return <Film className="w-full h-auto" strokeWidth={1.5} />;
     case "projects":
-      return <Palette className="w-full h-auto" strokeWidth={1.5} />;
+      return <MessageCircleMore className="w-full h-auto" strokeWidth={1.5} />;
     case "contact":
       return <Phone className="w-full h-auto" strokeWidth={1.5} />;
     case "jarvis":
       return <Brain className="w-full h-auto" strokeWidth={1.5} />; 
     case "linkedin":
-      return <Plane className="w-full h-auto" strokeWidth={1.5} />;
+      return <Swords className="w-full h-auto" strokeWidth={1.5} />;
     case "twitter":
-      return <Puzzle className="w-full h-auto" strokeWidth={1.5} />;
+      return<User className="w-full h-auto" strokeWidth={1.5} />;
     case "resume":
       return <NotebookText className="w-full h-auto" strokeWidth={1.5} />;
 

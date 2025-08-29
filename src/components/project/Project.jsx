@@ -8,22 +8,21 @@ import hulk from "../projects/hulk.png";
 import america from "../projects/america.png";
 
 const predefinedUsers = [
+  { name: "Captain America", avatar: america.src },
   { name: "Iron Man", avatar: iron.src },
   { name: "Thor", avatar: thor.src },
   { name: "Hulk", avatar: hulk.src },
-  { name: "Captain America", avatar: america.src },
 ];
 
-export default function Project() {
+export default function HeroBattle() {
   const [stompClient, setStompClient] = useState(null);
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [takenUsers, setTakenUsers] = useState([]);
-  const [disabledHeroes, setDisabledHeroes] = useState([]);
+  const [takenHeroes, setTakenHeroes] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Setup WebSocket
+  // WebSocket setup
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
@@ -35,30 +34,18 @@ export default function Project() {
       console.log("✅ Connected to WebSocket");
       setConnected(true);
 
-      // 🔹 Subscribe to global taken heroes updates
-      client.subscribe("/topic/takenHeroes", (msg) => {
-        if (msg.body) {
-          const heroes = JSON.parse(msg.body);
-          console.log("📌 Taken heroes from server:", heroes);
-          setTakenUsers(heroes); // overwrite with server state
-        }
-      });
-
-      // 🔹 Request current taken heroes from server
-      client.publish({
-        destination: "/app/getTakenHeroes",
-        body: "{}",
-      });
-
-      // 🔹 Subscribe to notifications
       client.subscribe("/topic/notification", (msg) => {
         if (!msg.body) return;
         const data = JSON.parse(msg.body);
 
         if (data.type === "USER_TAKEN") {
-          setTakenUsers((prev) =>
+          setTakenHeroes((prev) =>
             prev.includes(data.hero) ? prev : [...prev, data.hero]
           );
+        }
+
+        if (data.type === "USER_RELEASED") {
+          setTakenHeroes((prev) => prev.filter((h) => h !== data.hero));
         }
 
         if (data.type === "CHAT") {
@@ -80,57 +67,53 @@ export default function Project() {
     client.activate();
     setStompClient(client);
 
-    return () => {
-      client.deactivate();
-    };
+    return () => client.deactivate();
   }, [currentUser]);
 
-  // Send chat message
+  // Send chat
   const sendMessage = () => {
-    if (!stompClient || !stompClient.connected) return;
+    if (!stompClient || !stompClient.connected || !input.trim() || !currentUser) return;
+
+    const msgObj = { type: "CHAT", sender: currentUser.name, text: input };
 
     stompClient.publish({
-      destination: "/meet/sendMessage",
-      body: JSON.stringify({
-        type: "CHAT",
-        sender: currentUser.name,
-        text: input,
-      }),
+      destination: "/app/sendMessage",
+      body: JSON.stringify(msgObj),
     });
 
     setInput("");
   };
 
-  // 🔹 REST-based hero selection
-  const handleSelectHero = async (u) => {
-    if (takenUsers.includes(u.name)) return; // 🚫 Already taken
-    if (currentUser) return; // 🚫 Already selected yourself
+  // Select hero
+  const handleSelectHero = (hero) => {
+    if (takenHeroes.includes(hero.name) || currentUser) return;
 
-    // Set locally
-    setCurrentUser(u);
-    setTakenUsers((prev) => [...prev, u.name]);
+    setCurrentUser(hero);
+    setTakenHeroes((prev) => [...prev, hero.name]);
 
-    try {
-      // Call backend REST API
-      await fetch(`api/heroes/${heroId}/disable`, { method: "POST" });
-      setDisabledHeroes([...disabledHeroes, u.name]);
-    } catch (error) {
-      console.error("Error disabling hero=", error);
-    }
-
-    // Also broadcast via WebSocket so other clients know
+    // Notify server
     if (stompClient && stompClient.connected) {
       stompClient.publish({
-        destination: "/api/selectHero",
-        body: JSON.stringify({
-          type: "USER_TAKEN",
-          hero: u.name,
-        }),
+        destination: "/app/sendMessage",
+        body: JSON.stringify({ type: "USER_TAKEN", hero: hero.name }),
       });
     }
   };
 
-  // If hero not selected yet
+  // Release hero
+  const releaseHero = () => {
+    if (!currentUser || !stompClient || !stompClient.connected) return;
+
+    stompClient.publish({
+      destination: "/app/sendMessage",
+      body: JSON.stringify({ type: "USER_RELEASED", hero: currentUser.name }),
+    });
+
+    setTakenHeroes((prev) => prev.filter((h) => h !== currentUser.name));
+    setCurrentUser(null);
+  };
+
+  // Hero selection screen
   if (!currentUser) {
     return (
       <div style={{ textAlign: "center", padding: "20px" }}>
@@ -144,32 +127,28 @@ export default function Project() {
             marginTop: "20px",
           }}
         >
-          {predefinedUsers.map((u) => {
-            const isTaken = takenUsers.includes(u.name);
+          {predefinedUsers.map((hero) => {
+            const isTaken = takenHeroes.includes(hero.name);
             return (
               <div
-                key={u.name}
+                key={hero.name}
+                onClick={() => handleSelectHero(hero)}
                 style={{
                   cursor: isTaken ? "not-allowed" : "pointer",
-                  padding: "10px",
+                  opacity: isTaken ? 0.5 : 1,
                   border: "2px solid #ddd",
                   borderRadius: "12px",
+                  padding: "10px",
                   width: "120px",
-                  opacity: isTaken ? 0.5 : 1,
                   transition: "0.2s",
                 }}
-                onClick={() => handleSelectHero(u)}
               >
                 <img
-                  src={u.avatar}
-                  alt={u.name}
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    borderRadius: "50%",
-                  }}
+                  src={hero.avatar}
+                  alt={hero.name}
+                  style={{ width: "80px", height: "80px", borderRadius: "50%" }}
                 />
-                <p>{u.name}</p>
+                <p>{hero.name}</p>
               </div>
             );
           })}
@@ -199,8 +178,6 @@ export default function Project() {
           background: "linear-gradient(90deg, rgb(83 52 121), rgb(38 30 47))",
           color: "white",
           padding: "40px",
-          textAlign: "center",
-          height: "100px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -225,9 +202,9 @@ export default function Project() {
           background: "transparent",
         }}
       >
-        {messages.map((msg, index) => (
+        {messages.map((msg, idx) => (
           <div
-            key={index}
+            key={idx}
             style={{
               display: "flex",
               justifyContent: msg.self ? "flex-end" : "flex-start",
@@ -235,19 +212,16 @@ export default function Project() {
             }}
           >
             {!msg.self && (
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "5px" }}
-              >
-                <img
-                  src={msg.avatar}
-                  alt={msg.sender}
-                  style={{
-                    width: "75px",
-                    height: "85px",
-                    borderRadius: "50%",
-                  }}
-                />
-              </div>
+              <img
+                src={msg.avatar}
+                alt={msg.sender}
+                style={{
+                  width: "75px",
+                  height: "85px",
+                  borderRadius: "50%",
+                  marginRight: "5px",
+                }}
+              />
             )}
             <div
               style={{
@@ -257,7 +231,9 @@ export default function Project() {
                 borderRadius: "10px",
                 maxWidth: "50%",
                 wordWrap: "break-word",
-                height: "37px",
+                minHeight: "37px",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               {msg.text}
@@ -287,6 +263,7 @@ export default function Project() {
             background: "black",
             color: "white",
           }}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         <button
           onClick={sendMessage}
@@ -303,6 +280,24 @@ export default function Project() {
           Send
         </button>
       </div>
+
+      {/* Release button */}
+      {currentUser && (
+        <div style={{ textAlign: "center", margin: "10px" }}>
+          <button
+            onClick={releaseHero}
+            style={{
+              padding: "8px 16px",
+              background: "red",
+              color: "white",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Release {currentUser.name}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
