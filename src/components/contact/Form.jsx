@@ -32,7 +32,7 @@ export default function Form() {
     const toastId = toast.loading("Sending your message, please wait...");
 
     toast.info(
-      "Form submissions are demo-only here. Please checkout the final code repo to enable it. If you want to connect you can reach out to me via codebucks27@gmail.com.",
+      "Form submissions are demo-only here. Please checkout the final code repo to enable it. If you want to connect you can reach out to me via kshitizsingh699@gmail.com.",
       {
         id: toastId,
       }

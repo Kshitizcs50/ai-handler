@@ -10,6 +10,7 @@ import LogoutButton from "./LogoutButton";
  // ⬅️ import logout button
 
 import dynamic from "next/dynamic";
+import Live from "./(sub pages)/Live";
 const Wizard = dynamic(() => import("@/components/models/Wizard"), {
   ssr: false,
 });
@@ -49,6 +50,7 @@ export default function Home() {
         <RenderModel>
           <Wizard />
         </RenderModel>
+         <Live/>
       </div>
     </main>
   );

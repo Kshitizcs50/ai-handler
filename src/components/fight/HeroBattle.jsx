@@ -24,7 +24,7 @@ export default function HeroBattle() {
 
   // 🔌 Connect WebSocket
   useEffect(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS("ai-handler-backend-production.up.railway.app/ws");
     const client = new Client({
       webSocketFactory: () => socket,
       debug: (str) => console.log("[STOMP]", str),
@@ -69,7 +69,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem("token"); // ✅ get JWT from login
 
-      const res = await fetch("http://localhost:8080/api/battle/heroes", {
+      const res = await fetch("ai-handler-backend-production.up.railway.app/api/battle/heroes", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
