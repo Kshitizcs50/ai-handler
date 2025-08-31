@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 // ✅ Custom Typewriter hook
-function useTypewriter(text, speed = 100) {
+function useTypewriter(text, speed = 60) {
   const [displayed, setDisplayed] = useState("");
 
   useEffect(() => {
@@ -15,7 +15,6 @@ function useTypewriter(text, speed = 100) {
       i++;
       if (i >= text.length) clearInterval(interval);
     }, speed);
-
     return () => clearInterval(interval);
   }, [text, speed]);
 
@@ -24,7 +23,7 @@ function useTypewriter(text, speed = 100) {
 
 export default function Signup() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
   const title = useTypewriter("⚡ Become a Hero – Signup Now! ⚡", 70);
 
   const handleChange = (e) =>
@@ -33,11 +32,14 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch(
+        "https://ai-handler-backend-production.up.railway.app/api/auth/signup",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
 
       if (!res.ok) throw new Error("Signup failed");
 
@@ -48,45 +50,54 @@ export default function Signup() {
   };
 
   return (
-    <main className="relative flex items-center justify-center h-screen overflow-hidden">
+    <main className="relative flex items-center justify-center h-screen overflow-hidden px-4 sm:px-6">
       {/* Cosmic Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-900 via-black to-red-900 animate-pulse opacity-80"></div>
 
-      {/* Floating stars */}
-      <div className="absolute w-full h-full">
-        {[...Array(40)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute bg-white rounded-full"
-            style={{
-              width: Math.random() * 3 + "px",
-              height: Math.random() * 3 + "px",
-              top: Math.random() * 100 + "%",
-              left: Math.random() * 100 + "%",
-            }}
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{
-              duration: Math.random() * 4 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-            }}
-          />
-        ))}
-      </div>
+      {/* Floating Stars */}
+      {[...Array(40)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute bg-white rounded-full"
+          style={{
+            width: Math.random() * 3 + "px",
+            height: Math.random() * 3 + "px",
+            top: Math.random() * 100 + "%",
+            left: Math.random() * 100 + "%",
+          }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{
+            duration: Math.random() * 4 + 2,
+            repeat: Infinity,
+            delay: Math.random() * 3,
+          }}
+        />
+      ))}
 
       {/* Signup Container */}
       <motion.div
         initial={{ x: "100vw", opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 60, damping: 20 }}
-        className="relative z-10 bg-black/70 p-10 rounded-2xl shadow-2xl border border-red-500 w-[90%] max-w-md"
+        className="relative z-10 bg-black/70 p-6 sm:p-8 md:p-10 rounded-2xl shadow-2xl border border-red-500 w-full max-w-md"
       >
         {/* Typewriter Heading */}
-        <h1 className="text-2xl font-extrabold text-red-400 mb-6 text-center drop-shadow-md">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-red-400 mb-6 text-center drop-shadow-md">
           {title}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Username */}
+          <input
+            type="text"
+            name="username"
+            value={form.username}
+            onChange={handleChange}
+            placeholder="Enter your username"
+            required
+            className="w-full px-4 py-2 rounded bg-gray-900/80 text-white border-2 border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none transition text-sm sm:text-base"
+          />
+          {/* Email */}
           <input
             type="email"
             name="email"
@@ -94,8 +105,9 @@ export default function Signup() {
             onChange={handleChange}
             placeholder="Enter your email"
             required
-            className="w-full px-4 py-2 rounded bg-gray-900/80 text-white border-2 border-red-500 focus:ring-2 focus:ring-red-400 outline-none transition"
+            className="w-full px-4 py-2 rounded bg-gray-900/80 text-white border-2 border-red-500 focus:ring-2 focus:ring-red-400 outline-none transition text-sm sm:text-base"
           />
+          {/* Password */}
           <input
             type="password"
             name="password"
@@ -103,17 +115,17 @@ export default function Signup() {
             onChange={handleChange}
             placeholder="Enter your password"
             required
-            className="w-full px-4 py-2 rounded bg-gray-900/80 text-white border-2 border-purple-500 focus:ring-2 focus:ring-purple-400 outline-none transition"
+            className="w-full px-4 py-2 rounded bg-gray-900/80 text-white border-2 border-purple-500 focus:ring-2 focus:ring-purple-400 outline-none transition text-sm sm:text-base"
           />
           <button
             type="submit"
-            className="w-full py-2 bg-gradient-to-r from-red-600 to-purple-700 rounded text-white font-bold tracking-wide shadow-lg hover:scale-105 transform transition"
+            className="w-full py-2 sm:py-3 bg-gradient-to-r from-red-600 to-purple-700 rounded text-white font-bold tracking-wide shadow-lg hover:scale-105 transform transition text-sm sm:text-base"
           >
             SIGNUP
           </button>
         </form>
 
-        <p className="text-gray-400 text-sm mt-6 text-center">
+        <p className="text-gray-400 text-xs sm:text-sm mt-6 text-center">
           Already a hero?{" "}
           <span
             onClick={() => router.push("/login")}

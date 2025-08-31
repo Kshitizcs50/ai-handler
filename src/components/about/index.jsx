@@ -20,7 +20,7 @@ export default function MoviesPage() {
   // Fetch movies
   const fetchMovies = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/movies");
+      const res = await fetch("https://ai-handler-backend-production.up.railway.app/api/movies");
       const data = await res.json();
       setMovies(data);
       setFilteredMovies(data);
@@ -55,7 +55,7 @@ export default function MoviesPage() {
     const newMovie = { title, posterUrl, description, trailerUrl, genre };
 
     try {
-      const res = await fetch("http://localhost:8080/api/movies", {
+      const res = await fetch("https://ai-handler-backend-production.up.railway.app/api/movies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMovie),
@@ -92,22 +92,22 @@ export default function MoviesPage() {
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 p-6 shadow-lg bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 rounded-b-2xl text-white">
-        <h1 className="text-4xl font-extrabold tracking-wide drop-shadow-lg">
+        <h1 className="text-4xl font-extrabold tracking-wide drop-shadow-lg text-center md:text-left">
           🎬 Movie Collection
         </h1>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto items-center">
           <input
             type="text"
             placeholder="🔍 Search movies..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 rounded-lg shadow focus:outline-none text-black"
+            className="px-4 py-2 rounded-lg shadow w-full sm:w-auto focus:outline-none text-black"
           />
 
           <select
             value={selectedGenre}
             onChange={(e) => setSelectedGenre(e.target.value)}
-            className="px-4 py-2 rounded-lg shadow text-black"
+            className="px-4 py-2 rounded-lg shadow w-full sm:w-auto text-black"
           >
             <option value="">All Genres</option>
             <option value="Action">Action</option>
@@ -117,14 +117,14 @@ export default function MoviesPage() {
 
           <button
             onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition-transform"
+            className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition-transform w-full sm:w-auto"
           >
             + Add Movie
           </button>
 
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="bg-gray-800 px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform"
+            className="bg-gray-800 px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform w-full sm:w-auto"
           >
             {darkMode ? "🌞 Light" : "🌙 Dark"}
           </button>
@@ -134,7 +134,7 @@ export default function MoviesPage() {
       {/* Movies Grid */}
       <motion.div
         layout
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 px-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-4 sm:px-6"
       >
         {filteredMovies.map((movie) => (
           <motion.div
@@ -147,13 +147,13 @@ export default function MoviesPage() {
             <motion.img
               src={movie.posterUrl}
               alt={movie.title}
-              className="w-full h-64 object-cover"
+              className="w-full h-48 sm:h-56 md:h-64 object-cover"
               whileHover={{ scale: 1.1 }}
               transition={{ duration: 0.4 }}
             />
             <div className="p-4 space-y-2">
               <h2 className="text-lg font-semibold truncate">{movie.title}</h2>
-              <p className="text-sm italic">{movie.genre}</p>
+              <p className="text-sm italic truncate">{movie.genre}</p>
               <p className="text-sm line-clamp-2">{movie.description}</p>
 
               {/* Ratings */}
@@ -185,7 +185,7 @@ export default function MoviesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center bg-black/70 z-50"
+            className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 px-4"
           >
             <motion.form
               onSubmit={handleSubmit}
@@ -193,7 +193,7 @@ export default function MoviesPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="backdrop-blur-lg bg-white/30 p-6 rounded-2xl shadow-2xl w-96 space-y-4 border border-white/20"
+              className="backdrop-blur-lg bg-white/30 p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-4 border border-white/20"
             >
               <h2 className="text-2xl font-bold text-center">Add New Movie</h2>
 
@@ -241,17 +241,17 @@ export default function MoviesPage() {
                 required
               />
 
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row justify-between gap-2">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 bg-gray-400 rounded-lg hover:bg-gray-500"
+                  className="px-4 py-2 bg-gray-400 rounded-lg hover:bg-gray-500 w-full sm:w-auto"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full sm:w-auto"
                 >
                   Save
                 </button>
@@ -268,14 +268,14 @@ export default function MoviesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center bg-black/90 z-50"
+            className="fixed inset-0 flex items-center justify-center bg-black/90 z-50 px-4"
           >
             <motion.div
               initial={{ scale: 0.7 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.7 }}
               transition={{ duration: 0.3 }}
-              className="rounded-xl shadow-lg w-[90%] md:w-[70%] h-[70%] relative bg-black overflow-hidden"
+              className="rounded-xl shadow-lg w-full max-w-3xl aspect-video relative bg-black overflow-hidden"
             >
               <button
                 onClick={() => setSelectedTrailer(null)}
@@ -291,7 +291,7 @@ export default function MoviesPage() {
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="rounded-xl"
+                className="rounded-xl w-full h-full"
               ></iframe>
             </motion.div>
           </motion.div>

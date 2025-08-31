@@ -24,7 +24,7 @@ export default function Auth() {
   const title = useTypewriter("⚡ Welcome to the Multiverse ⚡", 70);
 
   return (
-    <main className="relative flex items-center justify-center h-screen overflow-hidden">
+    <main className="relative flex items-center justify-center h-screen overflow-hidden px-4 sm:px-6">
       {/* Background Nebula */}
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-900 via-black to-purple-900 animate-gradient-x"></div>
 
@@ -50,7 +50,7 @@ export default function Auth() {
 
       {/* Rotating Portal Ring */}
       <motion.div
-        className="absolute border-4 border-pink-500 rounded-full w-[600px] h-[600px] opacity-20"
+        className="absolute border-4 border-pink-500 rounded-full w-[250px] sm:w-[400px] md:w-[600px] h-[250px] sm:h-[400px] md:h-[600px] opacity-20"
         animate={{ rotate: 360 }}
         transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
       ></motion.div>
@@ -60,35 +60,35 @@ export default function Auth() {
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 80, damping: 12 }}
-        className="relative z-10 bg-black/70 p-12 rounded-3xl shadow-[0_0_35px_rgba(236,72,153,0.7)] border border-pink-400 w-[90%] max-w-2xl text-center"
+        className="relative z-10 bg-black/70 p-6 sm:p-8 md:p-12 rounded-3xl shadow-[0_0_35px_rgba(236,72,153,0.7)] border border-pink-400 w-full max-w-xl text-center"
       >
         {/* Title */}
-        <h1 className="text-3xl font-extrabold text-pink-400 mb-10 drop-shadow-[0_0_25px_rgba(236,72,153,0.9)]">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-pink-400 mb-8 sm:mb-10 drop-shadow-[0_0_25px_rgba(236,72,153,0.9)]">
           {title}
         </h1>
 
         {/* Card Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {/* Login Card */}
           <motion.div
-            whileHover={{ scale: 1.1, rotateY: 10 }}
-            className="cursor-pointer bg-gradient-to-r from-purple-600 to-blue-700 p-6 rounded-2xl shadow-lg hover:shadow-[0_0_35px_rgba(147,51,234,0.9)]"
+            whileHover={{ scale: 1.05, rotateY: 5 }}
+            className="cursor-pointer bg-gradient-to-r from-purple-600 to-blue-700 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-[0_0_35px_rgba(147,51,234,0.9)]"
             onClick={() => router.push("/login")}
           >
-            <h2 className="text-xl font-bold text-white mb-3">🔑 Login</h2>
-            <p className="text-gray-200 text-sm">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-2">🔑 Login</h2>
+            <p className="text-gray-200 text-xs sm:text-sm">
               Enter your portal and continue your multiverse journey.
             </p>
           </motion.div>
 
           {/* Signup Card */}
           <motion.div
-            whileHover={{ scale: 1.1, rotateY: -10 }}
-            className="cursor-pointer bg-gradient-to-r from-pink-600 to-red-700 p-6 rounded-2xl shadow-lg hover:shadow-[0_0_35px_rgba(236,72,153,0.9)]"
+            whileHover={{ scale: 1.05, rotateY: -5 }}
+            className="cursor-pointer bg-gradient-to-r from-pink-600 to-red-700 p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-[0_0_35px_rgba(236,72,153,0.9)]"
             onClick={() => router.push("/signup")}
           >
-            <h2 className="text-xl font-bold text-white mb-3">🌟 Signup</h2>
-            <p className="text-gray-200 text-sm">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-2">🌟 Signup</h2>
+            <p className="text-gray-200 text-xs sm:text-sm">
               Create a new timeline and start your adventure today.
             </p>
           </motion.div>

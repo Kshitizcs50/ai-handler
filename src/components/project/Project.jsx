@@ -22,7 +22,6 @@ export default function HeroBattle() {
   const [takenHeroes, setTakenHeroes] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // WebSocket setup
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
@@ -31,7 +30,6 @@ export default function HeroBattle() {
     });
 
     client.onConnect = () => {
-      console.log("✅ Connected to WebSocket");
       setConnected(true);
 
       client.subscribe("/topic/notification", (msg) => {
@@ -70,28 +68,20 @@ export default function HeroBattle() {
     return () => client.deactivate();
   }, [currentUser]);
 
-  // Send chat
   const sendMessage = () => {
     if (!stompClient || !stompClient.connected || !input.trim() || !currentUser) return;
 
     const msgObj = { type: "CHAT", sender: currentUser.name, text: input };
-
-    stompClient.publish({
-      destination: "/app/sendMessage",
-      body: JSON.stringify(msgObj),
-    });
-
+    stompClient.publish({ destination: "/app/sendMessage", body: JSON.stringify(msgObj) });
     setInput("");
   };
 
-  // Select hero
   const handleSelectHero = (hero) => {
     if (takenHeroes.includes(hero.name) || currentUser) return;
 
     setCurrentUser(hero);
     setTakenHeroes((prev) => [...prev, hero.name]);
 
-    // Notify server
     if (stompClient && stompClient.connected) {
       stompClient.publish({
         destination: "/app/sendMessage",
@@ -100,7 +90,6 @@ export default function HeroBattle() {
     }
   };
 
-  // Release hero
   const releaseHero = () => {
     if (!currentUser || !stompClient || !stompClient.connected) return;
 
@@ -113,42 +102,28 @@ export default function HeroBattle() {
     setCurrentUser(null);
   };
 
-  // Hero selection screen
+  // Hero Selection Screen
   if (!currentUser) {
     return (
-      <div style={{ textAlign: "center", padding: "20px" }}>
-        <h2>Select Your Hero</h2>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "20px",
-            flexWrap: "wrap",
-            marginTop: "20px",
-          }}
-        >
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <h2 className="text-2xl font-bold mb-6">Select Your Hero</h2>
+        <div className="flex flex-wrap justify-center gap-6">
           {predefinedUsers.map((hero) => {
             const isTaken = takenHeroes.includes(hero.name);
             return (
               <div
                 key={hero.name}
                 onClick={() => handleSelectHero(hero)}
-                style={{
-                  cursor: isTaken ? "not-allowed" : "pointer",
-                  opacity: isTaken ? 0.5 : 1,
-                  border: "2px solid #ddd",
-                  borderRadius: "12px",
-                  padding: "10px",
-                  width: "120px",
-                  transition: "0.2s",
-                }}
+                className={`cursor-pointer border-2 border-gray-300 rounded-xl p-4 w-32 transition-opacity ${
+                  isTaken ? "opacity-50 cursor-not-allowed" : "hover:scale-105"
+                }`}
               >
                 <img
                   src={hero.avatar}
                   alt={hero.name}
-                  style={{ width: "80px", height: "80px", borderRadius: "50%" }}
+                  className="w-20 h-20 mx-auto rounded-full mb-2"
                 />
-                <p>{hero.name}</p>
+                <p className="text-center font-medium">{hero.name}</p>
               </div>
             );
           })}
@@ -157,84 +132,33 @@ export default function HeroBattle() {
     );
   }
 
-  // Chat UI
+  // Chat Screen
   return (
-    <div
-      style={{
-        maxWidth: "1500px",
-        margin: "20px auto",
-        border: "1px solid #ddd",
-        borderRadius: "12px",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        height: "80vh",
-        width: "90%",
-      }}
-    >
+    <div className="flex flex-col max-w-6xl w-full mx-auto h-[80vh] border rounded-xl overflow-hidden">
       {/* Header */}
-      <div
-        style={{
-          background: "linear-gradient(90deg, rgb(83 52 121), rgb(38 30 47))",
-          color: "white",
-          padding: "40px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <h2 style={{ fontWeight: "bold", margin: 0 }}>
-          Team meet {connected ? "🟢" : "🔴"}
-        </h2>
-        <h3
-          style={{ marginLeft: "160px", color: "yellow", fontWeight: "bold" }}
-        >
-          You are {currentUser.name}
-        </h3>
+      <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-800 to-gray-900 text-white">
+        <h2 className="font-bold">Team Meet {connected ? "🟢" : "🔴"}</h2>
+        <h3 className="text-yellow-400 font-bold">You are {currentUser.name}</h3>
       </div>
 
       {/* Messages */}
-      <div
-        style={{
-          flex: 1,
-          padding: "10px",
-          overflowY: "auto",
-          background: "transparent",
-        }}
-      >
+      <div className="flex-1 p-4 overflow-y-auto bg-gray-900">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            style={{
-              display: "flex",
-              justifyContent: msg.self ? "flex-end" : "flex-start",
-              marginBottom: "10px",
-            }}
+            className={`flex mb-2 ${msg.self ? "justify-end" : "justify-start"}`}
           >
             {!msg.self && (
               <img
                 src={msg.avatar}
                 alt={msg.sender}
-                style={{
-                  width: "75px",
-                  height: "85px",
-                  borderRadius: "50%",
-                  marginRight: "5px",
-                }}
+                className="w-16 h-16 rounded-full mr-2"
               />
             )}
             <div
-              style={{
-                background: msg.self ? "#007bff" : "#e5e5ea",
-                color: msg.self ? "white" : "black",
-                padding: "5px 28px",
-                borderRadius: "10px",
-                maxWidth: "50%",
-                wordWrap: "break-word",
-                minHeight: "37px",
-                display: "flex",
-                alignItems: "center",
-              }}
+              className={`px-6 py-2 rounded-lg max-w-[50%] break-words flex items-center ${
+                msg.self ? "bg-blue-600 text-white" : "bg-gray-300 text-black"
+              }`}
             >
               {msg.text}
             </div>
@@ -243,61 +167,32 @@ export default function HeroBattle() {
       </div>
 
       {/* Input */}
-      <div
-        style={{
-          display: "flex",
-          padding: "10px",
-          borderTop: "1px solid #ddd",
-        }}
-      >
+      <div className="flex p-4 border-t border-gray-700 bg-gray-800">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-          style={{
-            flex: 1,
-            padding: "8px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            background: "black",
-            color: "white",
-          }}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="Type a message..."
+          className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-900 text-white focus:outline-none"
         />
         <button
           onClick={sendMessage}
-          style={{
-            marginLeft: "10px",
-            padding: "8px 16px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
+          className="ml-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
         >
           Send
         </button>
       </div>
 
-      {/* Release button */}
-      {currentUser && (
-        <div style={{ textAlign: "center", margin: "10px" }}>
-          <button
-            onClick={releaseHero}
-            style={{
-              padding: "8px 16px",
-              background: "red",
-              color: "white",
-              borderRadius: "8px",
-              cursor: "pointer",
-            }}
-          >
-            Release {currentUser.name}
-          </button>
-        </div>
-      )}
+      {/* Release Hero */}
+      <div className="p-4 text-center">
+        <button
+          onClick={releaseHero}
+          className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+        >
+          Release {currentUser.name}
+        </button>
+      </div>
     </div>
   );
 }

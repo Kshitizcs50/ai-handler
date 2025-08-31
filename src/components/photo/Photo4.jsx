@@ -7,7 +7,6 @@ import { Iron } from "../models/iron";
 function Photo4() {
   const [showDetails, setShowDetails] = useState(false);
 
-  // Left Panel: Abilities
   const detailsLeft = [
     {
       name: "Powered Armor Suit",
@@ -26,7 +25,6 @@ function Photo4() {
     },
   ];
 
-  // Right Panel: Gadgets / Weapons
   const detailsRight = [
     {
       name: "Repulsor Blasts",
@@ -46,29 +44,31 @@ function Photo4() {
   ];
 
   return (
-    <div className="w-[1200px] h-[900px] flex flex-col items-center relative space-y-20">
+    <div className="flex flex-col items-center relative w-full min-h-screen p-4 space-y-12">
       {/* 3D Model */}
-      <RenderModel>
-        <Iron />
-      </RenderModel>
+      <div className="w-full max-w-4xl h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px]">
+        <RenderModel>
+          <Iron />
+        </RenderModel>
+      </div>
 
       {/* Hero Name */}
-      <h1 className="absolute bottom-44 right-9 text-5xl font-extrabold text-blue-400 drop-shadow-[0_0_25px_rgba(0,200,255,0.9)] tracking-widest">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-400 drop-shadow-[0_0_25px_rgba(0,200,255,0.9)] tracking-widest text-center">
         IRON MAN
       </h1>
 
       {/* Toggle Button */}
-      <div className="absolute right-12 bottom-32 z-10">
+      <div className="z-10">
         {!showDetails ? (
           <button
-            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-full shadow-2xl hover:scale-110 hover:shadow-cyan-400/50 transition-all duration-300"
+            className="px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-full shadow-2xl hover:scale-105 hover:shadow-cyan-400/50 transition-all duration-300"
             onClick={() => setShowDetails(true)}
           >
             Show Details
           </button>
         ) : (
           <button
-            className="px-8 py-3 bg-gradient-to-r from-red-600 to-yellow-500 text-white font-bold rounded-full shadow-2xl hover:scale-110 hover:shadow-yellow-400/50 transition-all duration-300"
+            className="px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-red-600 to-yellow-500 text-white font-bold rounded-full shadow-2xl hover:scale-105 hover:shadow-yellow-400/50 transition-all duration-300"
             onClick={() => setShowDetails(false)}
           >
             Revoke
@@ -78,17 +78,15 @@ function Photo4() {
 
       {/* Panels */}
       {showDetails && (
-        <>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 w-full max-w-6xl px-2">
           {/* Left Panel: Abilities */}
-          <div className="absolute left-14 top-[40%] -translate-y-1/2 bg-gradient-to-b from-blue-900/80 to-black/70 backdrop-blur-xl p-6 rounded-2xl shadow-2xl w-80 border border-cyan-400/40 z-10">
-            <h2 className="font-bold text-2xl mb-6 text-cyan-300 tracking-wider">
+          <div className="bg-gradient-to-b from-blue-900/80 to-black/70 backdrop-blur-xl p-4 sm:p-6 rounded-2xl shadow-2xl w-full md:w-80 border border-cyan-400/40">
+            <h2 className="font-bold text-xl sm:text-2xl mb-4 text-cyan-300 text-center md:text-left tracking-wide">
               Abilities
             </h2>
             {detailsLeft.map((d, idx) => (
-              <div key={idx} className="mb-6">
-                <h3 className="font-semibold text-lg text-yellow-300">
-                  {d.name}
-                </h3>
+              <div key={idx} className="mb-4 sm:mb-6">
+                <h3 className="font-semibold text-lg text-yellow-300">{d.name}</h3>
                 <p className="text-gray-200 text-sm">
                   <Typewriter
                     words={[d.description]}
@@ -105,15 +103,13 @@ function Photo4() {
           </div>
 
           {/* Right Panel: Weapons */}
-          <div className="absolute right-10 top-[40%] -translate-y-1/2 bg-gradient-to-b from-blue-900/80 to-black/70 backdrop-blur-xl p-6 rounded-2xl shadow-2xl w-80 border border-blue-400/40 z-10">
-            <h2 className="font-bold text-2xl mb-6 text-blue-300 tracking-wider">
+          <div className="bg-gradient-to-b from-blue-900/80 to-black/70 backdrop-blur-xl p-4 sm:p-6 rounded-2xl shadow-2xl w-full md:w-80 border border-blue-400/40">
+            <h2 className="font-bold text-xl sm:text-2xl mb-4 text-blue-300 text-center md:text-left tracking-wide">
               Weapons
             </h2>
             {detailsRight.map((d, idx) => (
-              <div key={idx} className="mb-6">
-                <h3 className="font-semibold text-lg text-yellow-300">
-                  {d.name}
-                </h3>
+              <div key={idx} className="mb-4 sm:mb-6">
+                <h3 className="font-semibold text-lg text-yellow-300">{d.name}</h3>
                 <p className="text-gray-200 text-sm">
                   <Typewriter
                     words={[d.description]}
@@ -128,7 +124,7 @@ function Photo4() {
               </div>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
