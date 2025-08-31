@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata = {
 
-  title: "My Portfolio",
+  title: "Ai-handler",
   description: "Demo project with Next.js, Tailwind and Three.js",
 };
 
