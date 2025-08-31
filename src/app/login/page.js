@@ -23,7 +23,7 @@ function useTypewriter(text, speed = 70) {
 
 export default function Login() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ username: "",, password: "" });
   const title = useTypewriter("🌀 Enter the Multiverse – Login", 60);
 
   const handleChange = (e) =>
@@ -94,15 +94,8 @@ export default function Login() {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="Enter your email"
-            required
-            className="w-full px-4 py-2 rounded bg-gray-900/80 text-white border-2 border-purple-500 focus:ring-2 focus:ring-purple-400 outline-none transition text-sm sm:text-base"
-          />
+          ><input type="text" name="username" value={form.username} onChange={handleChange} placeholder="Enter your username or email" />
+
           <input
             type="password"
             name="password"
