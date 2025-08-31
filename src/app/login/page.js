@@ -23,7 +23,7 @@ function useTypewriter(text, speed = 70) {
 
 export default function Login() {
   const router = useRouter();
-  const [form, setForm] = useState({ username: "",, password: "" });
+  const [form, setForm] = useState({ username: "", password: "" }); // 🔥 use username instead of email
   const title = useTypewriter("🌀 Enter the Multiverse – Login", 60);
 
   const handleChange = (e) =>
@@ -32,11 +32,14 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("https://ai-handler-backend-production.up.railway.app/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch(
+        "https://ai-handler-backend-production.up.railway.app/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form), // { username, password }
+        }
+      );
 
       if (!res.ok) throw new Error("Login failed");
 
@@ -94,8 +97,15 @@ export default function Login() {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          ><input type="text" name="username" value={form.username} onChange={handleChange} placeholder="Enter your username or email" />
-
+          <input
+            type="text"
+            name="username"
+            value={form.username}
+            onChange={handleChange}
+            placeholder="Enter your username"
+            required
+            className="w-full px-4 py-2 rounded bg-gray-900/80 text-white border-2 border-purple-500 focus:ring-2 focus:ring-purple-400 outline-none transition text-sm sm:text-base"
+          />
           <input
             type="password"
             name="password"
