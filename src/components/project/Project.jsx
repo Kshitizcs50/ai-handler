@@ -24,7 +24,7 @@ export default function HeroBattle() {
 
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+      webSocketFactory: () => new SockJS("https://ai-handler-backend-production.up.railway.app/ws"),
       reconnectDelay: 5000,
       debug: (str) => console.log(str),
     });
